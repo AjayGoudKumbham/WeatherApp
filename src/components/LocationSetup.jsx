@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { MapPin, Search } from 'lucide-react';
+import { MapPin, Search, X } from 'lucide-react';
 import { useWeatherStore } from '../store/weatherStore';
 import { cn } from '../utils/utils';
 
-export default function LocationSetup() {
+export default function LocationSetup({ onClose }) {
   const [city, setCity] = useState('');
   const [error, setError] = useState('');
   const { fetchCity, darkMode, setUserLocation } = useWeatherStore();
@@ -20,6 +20,7 @@ export default function LocationSetup() {
       await fetchCity(city.trim());
       setUserLocation(city.trim());
       localStorage.setItem('userLocation', city.trim());
+      onClose?.();
     } catch (err) {
       setError('Could not find this city. Please try again.');
     }
@@ -39,6 +40,7 @@ export default function LocationSetup() {
           await fetchCity(`${latitude},${longitude}`);
           setUserLocation(`${latitude},${longitude}`);
           localStorage.setItem('userLocation', `${latitude},${longitude}`);
+          onClose?.();
         } catch (err) {
           setError('Could not fetch weather for your location. Please enter your city manually.');
         }
@@ -52,20 +54,36 @@ export default function LocationSetup() {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className={cn(
-        "w-full max-w-md p-6 rounded-xl shadow-lg",
+        "w-full max-w-md p-6 rounded-xl shadow-lg relative",
         darkMode ? "bg-gray-800" : "bg-white"
       )}>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className={cn(
+              "absolute right-4 top-4 p-2 rounded-full",
+              "hover:bg-gray-100 dark:hover:bg-gray-700",
+              "transition-colors"
+            )}
+          >
+            <X size={20} className="text-gray-500 dark:text-gray-400" />
+          </button>
+        )}
+
         <h2 className={cn(
           "text-2xl font-bold mb-4",
           darkMode ? "text-white" : "text-gray-900"
         )}>
-          Welcome to Weather Dashboard
+          {onClose ? 'Change Location' : 'Welcome to Weather Dashboard'}
         </h2>
         <p className={cn(
           "mb-6",
           darkMode ? "text-gray-300" : "text-gray-600"
         )}>
-          To provide you with accurate weather information, please let us know your location.
+          {onClose 
+            ? 'Update your location to see weather information for a different area.'
+            : 'To provide you with accurate weather information, please let us know your location.'
+          }
         </p>
 
         <button
@@ -130,7 +148,7 @@ export default function LocationSetup() {
                 : "bg-blue-500 hover:bg-blue-600 text-white"
             )}
           >
-            Set Location
+            {onClose ? 'Update Location' : 'Set Location'}
           </button>
         </form>
       </div>

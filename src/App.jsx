@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Sun, Moon } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Sun, Moon, MapPin } from 'lucide-react';
 import { useWeatherStore } from './store/weatherStore';
 import SearchBar from './components/SearchBar';
 import WeatherCard from './components/WeatherCard';
@@ -9,6 +9,7 @@ import UnitToggle from './components/UnitToggle';
 import { cn } from './utils/utils';
 
 export default function App() {
+  const [showLocationSetup, setShowLocationSetup] = useState(false);
   const {
     cities,
     loading,
@@ -16,6 +17,7 @@ export default function App() {
     darkMode,
     selectedCity,
     locationSetupComplete,
+    userLocation,
     setSelectedCity,
     toggleDarkMode,
     initializeUserLocation
@@ -25,12 +27,18 @@ export default function App() {
     initializeUserLocation();
   }, [initializeUserLocation]);
 
+  const handleLocationClick = () => {
+    setShowLocationSetup(true);
+  };
+
   return (
     <div className={cn(
       "min-h-screen transition-colors",
       darkMode ? "bg-gray-900" : "bg-gray-100"
     )}>
-      {!locationSetupComplete && <LocationSetup />}
+      {(!locationSetupComplete || showLocationSetup) && (
+        <LocationSetup onClose={() => setShowLocationSetup(false)} />
+      )}
       
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
@@ -41,6 +49,19 @@ export default function App() {
             Weather Dashboard
           </h1>
           <div className="flex items-center gap-4">
+            <button
+              onClick={handleLocationClick}
+              className={cn(
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium text-sm",
+                "transition-colors",
+                darkMode 
+                  ? "bg-gray-800 text-gray-200 hover:bg-gray-700" 
+                  : "bg-white text-gray-800 hover:bg-gray-100"
+              )}
+            >
+              <MapPin size={16} />
+              {cities[0]?.city || "Set Location"}
+            </button>
             <UnitToggle />
             <button
               onClick={toggleDarkMode}
