@@ -4,6 +4,7 @@ import { useWeatherStore } from './store/weatherStore';
 import SearchBar from './components/SearchBar';
 import WeatherCard from './components/WeatherCard';
 import WeatherDetail from './components/WeatherDetail';
+import LocationSetup from './components/LocationSetup';
 import UnitToggle from './components/UnitToggle';
 import { cn } from './utils/utils';
 
@@ -14,6 +15,7 @@ export default function App() {
     error,
     darkMode,
     selectedCity,
+    locationSetupComplete,
     setSelectedCity,
     toggleDarkMode,
     initializeUserLocation
@@ -28,6 +30,8 @@ export default function App() {
       "min-h-screen transition-colors",
       darkMode ? "bg-gray-900" : "bg-gray-100"
     )}>
+      {!locationSetupComplete && <LocationSetup />}
+      
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
           <h1 className={cn(
